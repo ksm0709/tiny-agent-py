@@ -63,7 +63,7 @@ async def main():
     # 2. Initialize the agent
     agent = Agent(
         session_id="weather-session-001",
-        model="openai/gpt-4o-mini",       # Powered by litellm
+        model="openai/gpt-5.4-mini",       # Powered by litellm
         context_window_ratio=0.8,         # Keeps context within 80% of model's max tokens
         tools=[get_current_weather],      # Inject custom tools
         mcp_servers=[                     # Connect to external MCP servers

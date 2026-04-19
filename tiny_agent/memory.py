@@ -10,7 +10,7 @@ class SessionMemory:
     def __init__(
         self,
         session_id: str,
-        model: str = "openai/gpt-4o-mini",
+        model: str = "openai/gpt-5.4-mini",
         max_window_tokens: int = 64000,
         db_dir: str = "~/.tiny-agent/sessions",
     ):

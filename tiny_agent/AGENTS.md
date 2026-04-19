@@ -68,7 +68,7 @@ def my_tool(param: str) -> str:
 # Initialize agent
 agent = Agent(
     session_id="unique-id",
-    model="openai/gpt-4o-mini",
+    model="openai/gpt-5.4-mini",
     tools=[my_tool],
     hooks={"on_tool_start": my_hook},
 )

@@ -14,7 +14,7 @@ class Agent:
     def __init__(
         self,
         session_id: str,
-        model: str = "openai/gpt-4o-mini",
+        model: str = "openai/gpt-5.4-mini",
         system_prompt: str = "You are a helpful assistant.",
         context_window_ratio: float = 0.8,
         max_iterations: float = float("inf"),

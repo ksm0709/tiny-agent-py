@@ -27,7 +27,7 @@ def agent_setup():
 
         agent = Agent(
             session_id="e2e_session",
-            model="openai/gpt-4o-mini",
+            model="openai/gpt-5.4-mini",
             context_window_ratio=0.8,
             tools=[local_calculator],
             mcp_servers=[{"name": "mock_db", "command": "dummy"}],
