@@ -26,3 +26,27 @@ def test_load_agents_md_not_found():
     with tempfile.TemporaryDirectory() as temp_dir:
         content = SkillLoader.load_agents_md(temp_dir)
         assert content == ""
+
+
+def test_dynamic_skill_loading():
+    from tiny_agent.agent import Agent
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        skill_dir = os.path.join(temp_dir, "skills")
+        os.makedirs(skill_dir)
+
+        skill_file = os.path.join(skill_dir, "test_skill.md")
+        with open(skill_file, "w") as f:
+            f.write(
+                "---\nname: test_skill\ndescription: A test skill\n---\nThis is a test skill."
+            )
+
+        agents_md = os.path.join(skill_dir, "AGENTS.md")
+        with open(agents_md, "w") as f:
+            f.write("Global agent instructions")
+
+        agent = Agent(session_id="test_agent", skills_dirs=[skill_dir])
+
+        assert "Global agent instructions" in agent.system_prompt
+        assert "test_skill" in agent.system_prompt
+        assert "A test skill" in agent.system_prompt

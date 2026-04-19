@@ -198,3 +198,29 @@ async def test_agent_run_max_iterations(mock_acompletion):
         r.get("type") == "error" and "Max iterations" in r.get("content", "")
         for r in responses
     )
+
+
+@pytest.mark.asyncio
+@patch("tiny_agent.agent.acompletion")
+async def test_agent_run(mock_acompletion):
+    mock_chunk = MagicMock()
+    mock_chunk.choices = [MagicMock()]
+    mock_chunk.choices[0].delta.content = "Hello from mock!"
+    mock_chunk.choices[0].delta.tool_calls = None
+
+    async def mock_response():
+        yield mock_chunk
+
+    mock_acompletion.return_value = mock_response()
+
+    agent = Agent(session_id="test_run", max_iterations=1)
+
+    responses = []
+    async for chunk in agent.run("Hi"):
+        responses.append(chunk)
+
+    assert any(
+        r.get("type") == "content" and r.get("content") == "Hello from mock!"
+        for r in responses
+    )
+    assert len(agent.memory.get_window()) == 2

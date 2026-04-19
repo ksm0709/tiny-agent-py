@@ -66,3 +66,17 @@ async def test_tool_decorator_wrapper():
 
     result = await my_func(x=5)
     assert result == "6"
+
+
+@pytest.mark.asyncio
+async def test_tools_decorator():
+    @tool(name="add_numbers", description="Adds two numbers")
+    def add(a: int, b: int) -> int:
+        return a + b
+
+    assert hasattr(add, "__tool__")
+    schema = add.__tool__.get_schema()
+    assert schema["function"]["name"] == "add_numbers"
+
+    result = await add.__tool__.execute(a=5, b=3)
+    assert result == "8"

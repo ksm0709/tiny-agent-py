@@ -86,3 +86,26 @@ def test_cleanup_old_sessions(mock_tc):
             assert os.path.exists(readonly_path)
         finally:
             os.chmod(temp_dir, 0o755)
+
+
+@patch("litellm.token_counter", return_value=100)
+def test_session_memory_spill_over(mock_tc):
+    with tempfile.TemporaryDirectory() as temp_dir:
+        db_dir = os.path.join(temp_dir, "sessions")
+        memory = SessionMemory(
+            session_id="test_session", max_window_tokens=50, db_dir=db_dir
+        )
+
+        memory.add_message({"role": "user", "content": "msg1"})
+        memory.add_message({"role": "assistant", "content": "msg2"})
+        assert len(memory.get_window()) == 1
+        assert memory.get_window()[0]["content"] == "msg2"
+
+        memory.add_message({"role": "user", "content": "msg3"})
+        assert len(memory.get_window()) == 1
+        assert memory.get_window()[0]["content"] == "msg3"
+
+        archived = memory.list_archived_messages()
+        assert len(archived) == 2
+        assert archived[0]["short_content"] == "msg2"
+        assert archived[1]["short_content"] == "msg1"
