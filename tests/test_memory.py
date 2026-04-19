@@ -1,13 +1,15 @@
 import os
 import tempfile
 import time
+from unittest.mock import patch
 from tiny_agent.memory import SessionMemory
 
 
-def test_get_archived_message():
+@patch("litellm.token_counter", return_value=100)
+def test_get_archived_message(mock_tc):
     with tempfile.TemporaryDirectory() as temp_dir:
         memory = SessionMemory(
-            session_id="test_session", max_window_messages=1, db_dir=temp_dir
+            session_id="test_session", max_window_tokens=5, db_dir=temp_dir
         )
         memory.add_message({"role": "user", "content": "msg1"})
         memory.add_message({"role": "assistant", "content": "msg2"})
@@ -23,17 +25,20 @@ def test_get_archived_message():
         assert msg_none == {}
 
 
-def test_search_past_sessions():
+@patch("litellm.token_counter", return_value=100)
+def test_search_past_sessions(mock_tc):
     with tempfile.TemporaryDirectory() as temp_dir:
         memory1 = SessionMemory(
-            session_id="session1", max_window_messages=0, db_dir=temp_dir
+            session_id="session1", max_window_tokens=0, db_dir=temp_dir
         )
         memory1.add_message({"role": "user", "content": "apple banana"})
+        memory1.add_message({"role": "user", "content": "dummy"})
 
         memory2 = SessionMemory(
-            session_id="session2", max_window_messages=0, db_dir=temp_dir
+            session_id="session2", max_window_tokens=0, db_dir=temp_dir
         )
         memory2.add_message({"role": "user", "content": "apple orange"})
+        memory2.add_message({"role": "user", "content": "dummy"})
 
         results = SessionMemory.search_past_sessions("apple", db_dir=temp_dir)
         assert len(results) == 2
@@ -53,10 +58,11 @@ def test_search_past_sessions():
         assert len(results_corrupt) == 2
 
 
-def test_cleanup_old_sessions():
+@patch("litellm.token_counter", return_value=100)
+def test_cleanup_old_sessions(mock_tc):
     with tempfile.TemporaryDirectory() as temp_dir:
         memory1 = SessionMemory(
-            session_id="session1", max_window_messages=0, db_dir=temp_dir
+            session_id="session1", max_window_tokens=0, db_dir=temp_dir
         )
         memory1.add_message({"role": "user", "content": "msg1"})
 

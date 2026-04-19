@@ -14,7 +14,7 @@ class Agent:
         session_id: str,
         model: str = "openai/gpt-4o-mini",
         system_prompt: str = "You are a helpful assistant.",
-        max_context_window: int = 10,
+        context_window_ratio: float = 0.8,
         max_iterations: int = 10,
         tools: Optional[List[Callable]] = None,
         mcp_servers: Optional[List[Dict[str, Any]]] = None,
@@ -24,8 +24,19 @@ class Agent:
         self.session_id = session_id
         self.model = model
         self.max_iterations = max_iterations
+
+        import litellm
+
+        model_info = {}
+        try:
+            model_info = litellm.get_model_info(model) or {}
+        except Exception:
+            pass
+        max_tokens = model_info.get("max_input_tokens", 8000)
+        self.max_window_tokens = int(max_tokens * context_window_ratio)
+
         self.memory = SessionMemory(
-            session_id=session_id, max_window_messages=max_context_window
+            session_id=session_id, model=model, max_window_tokens=self.max_window_tokens
         )
         self.tools = {
             getattr(t, "__tool__").name: getattr(t, "__tool__")

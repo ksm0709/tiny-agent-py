@@ -16,23 +16,25 @@ class TestTinyAgent(unittest.IsolatedAsyncioTestCase):
     def tearDown(self):
         self.temp_dir.cleanup()
 
-    async def test_session_memory_spill_over(self):
+    @patch("litellm.token_counter", return_value=100)
+    async def test_session_memory_spill_over(self, mock_tc):
         memory = SessionMemory(
-            session_id="test_session", max_window_messages=2, db_dir=self.db_dir
+            session_id="test_session", max_window_tokens=0, db_dir=self.db_dir
         )
 
         memory.add_message({"role": "user", "content": "msg1"})
         memory.add_message({"role": "assistant", "content": "msg2"})
-        self.assertEqual(len(memory.get_window()), 2)
+        self.assertEqual(len(memory.get_window()), 1)
+        self.assertEqual(memory.get_window()[0]["content"], "msg2")
 
         memory.add_message({"role": "user", "content": "msg3"})
-        self.assertEqual(len(memory.get_window()), 2)
-        self.assertEqual(memory.get_window()[0]["content"], "msg2")
-        self.assertEqual(memory.get_window()[1]["content"], "msg3")
+        self.assertEqual(len(memory.get_window()), 1)
+        self.assertEqual(memory.get_window()[0]["content"], "msg3")
 
         archived = memory.list_archived_messages()
-        self.assertEqual(len(archived), 1)
-        self.assertEqual(archived[0]["short_content"], "msg1")
+        self.assertEqual(len(archived), 2)
+        self.assertEqual(archived[0]["short_content"], "msg2")
+        self.assertEqual(archived[1]["short_content"], "msg1")
 
     async def test_tools_decorator(self):
         @tool(name="add_numbers", description="Adds two numbers")

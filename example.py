@@ -14,7 +14,7 @@ async def main():
     agent = Agent(
         session_id="demo-session-456",
         model="openai/gpt-4o-mini",
-        max_context_window=5,
+        context_window_ratio=0.8,
         tools=[search_my_past_memories],
     )
 

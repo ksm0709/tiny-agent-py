@@ -10,11 +10,13 @@ class SessionMemory:
     def __init__(
         self,
         session_id: str,
-        max_window_messages: int = 10,
+        model: str = "openai/gpt-4o-mini",
+        max_window_tokens: int = 64000,
         db_dir: str = "~/.tiny-agent/sessions",
     ):
         self.session_id = session_id
-        self.max_window_messages = max_window_messages
+        self.model = model
+        self.max_window_tokens = max_window_tokens
         self.db_dir = os.path.expanduser(db_dir)
         os.makedirs(self.db_dir, exist_ok=True)
         self.db_path = os.path.join(self.db_dir, f"{session_id}.db")
@@ -55,10 +57,21 @@ class SessionMemory:
             """)
 
     def add_message(self, message: Dict[str, Any]):
+        import litellm
+
         self.window.append(message)
-        if len(self.window) > self.max_window_messages:
-            spilled = self.window.pop(0)
-            self._spill_to_db(spilled)
+        try:
+            while (
+                len(self.window) > 1
+                and litellm.token_counter(model=self.model, messages=self.window)
+                > self.max_window_tokens
+            ):
+                spilled = self.window.pop(0)
+                self._spill_to_db(spilled)
+        except Exception:
+            while len(self.window) > 20:
+                spilled = self.window.pop(0)
+                self._spill_to_db(spilled)
 
     def _spill_to_db(self, message: Dict[str, Any]):
         content_val = message.get("content", "")

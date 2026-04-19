@@ -7,7 +7,7 @@ Unlike massive frameworks (e.g., LangChain, AutoGen), `tiny-agent-py` avoids blo
 ## Core Features
 
 - **LiteLLM Routing**: Access 100+ LLMs (OpenAI, Anthropic, Gemini, local models) with a unified API.
-- **Dynamic Context Window**: Prevents context overflow by keeping only the `N` most recent messages in the active window.
+- **Dynamic Context Window**: Prevents context overflow by keeping the working memory under `N%` of the selected model's total context token limit.
 - **SQLite Spillover Memory**: Archives older messages to a per-session SQLite database, ensuring full history retention without token limits.
 - **Cross-Session Search**: Built-in tools for the agent to query past conversations.
 - **Native MCP Client**: Seamlessly connect to external Model Context Protocol (MCP) servers via `stdio`.
@@ -59,7 +59,7 @@ async def main():
     agent = Agent(
         session_id="weather-session-001",
         model="openai/gpt-4o-mini",       # Powered by litellm
-        max_context_window=10,            # Keeps the last 10 messages
+        context_window_ratio=0.8,         # Keeps context within 80% of model's max tokens
         tools=[get_current_weather],      # Inject custom tools
         mcp_servers=[                     # Connect to external MCP servers
             {

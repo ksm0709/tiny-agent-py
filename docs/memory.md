@@ -3,11 +3,11 @@
 `tiny-agent-py` uses a sliding-window memory approach backed by a per-session SQLite database. This ensures the LLM's context window stays within limits while persisting the full conversation history.
 
 ## Sliding-Window Context
-The agent only retains the most recent `N` messages in the working memory (the messages actually sent to the LLM).
-This is controlled by the `max_context_window` parameter during agent initialization.
+The agent dynamically calculates the token size of the messages and ensures that the working memory stays below a certain percentage of the model's total token limit.
+This is controlled by the `context_window_ratio` parameter (default 0.8, or 80%) during agent initialization.
 
 ## SQLite Spillover
-When the number of messages exceeds `max_context_window`, the oldest messages are offloaded (spilled over) into a local SQLite database (`.tiny_agent_memory.db` by default). This guarantees that:
+When the token count of messages exceeds the calculated limit, the oldest messages are offloaded (spilled over) into a local SQLite database (`.tiny_agent_memory.db` by default). This guarantees that:
 1. You never exceed LLM token limits.
 2. The complete conversation history is preserved across agent restarts.
 
