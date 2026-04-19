@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## v0.1.1 (2026-04-19)
+
+### Bug Fixes
+
+* fix: use standard pip and python build in release workflow instead of uv ([`6b4c7af`](https://github.com/ksm0709/tiny-agent-py/commit/6b4c7afb40673384c624d6f6d34adb239018fb98))
+
+
 ## v0.1.0 (2026-04-19)
 
 ### Bug Fixes
