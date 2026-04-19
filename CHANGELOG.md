@@ -1,6 +1,17 @@
 # CHANGELOG
 
 
+## v0.5.0 (2026-04-19)
+
+### Features
+
+* feat: support list of callables for custom hooks
+
+- Allow injecting multiple hooks per event by passing a list of Callable in the hooks dictionary.
+- Update type hinting for hooks parameter to Dict[str, Union[Callable, List[Callable]]].
+- Ensure backward compatibility: return a single value if only one hook is registered, otherwise return a list of values. ([`4619e7c`](https://github.com/ksm0709/tiny-agent-py/commit/4619e7ce0bd6cd16095dc0d75100964a206d14b3))
+
+
 ## v0.4.0 (2026-04-19)
 
 ### Features
