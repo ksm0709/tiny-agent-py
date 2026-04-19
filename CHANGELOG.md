@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.3.0 (2026-04-19)
+
+### Chores
+
+* chore: remove obsolete CLAUDE.md file ([`2c44fb3`](https://github.com/ksm0709/tiny-agent-py/commit/2c44fb3c9ab208a2fa207e0a810b730b3019f8e1))
+
+* chore: remove PyPI release step and update README installation instructions ([`66fdc8d`](https://github.com/ksm0709/tiny-agent-py/commit/66fdc8d5e9e0cc54a93708789df905b5fa92efa6))
+
+### Features
+
+* feat: change default max_iterations to infinity
+
+Allow the agent loop to run indefinitely by default (float('inf')), instead of a hardcoded limit of 10. Users can still restrict iterations when needed. ([`09b9519`](https://github.com/ksm0709/tiny-agent-py/commit/09b9519311fb2549697ae6e837021875ade22f86))
+
+
 ## v0.2.0 (2026-04-19)
 
 ### Chores
