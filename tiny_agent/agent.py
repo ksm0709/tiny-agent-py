@@ -24,10 +24,12 @@ class Agent:
         skills_dirs: Optional[List[str]] = None,
         hooks: Optional[Dict[str, Union[Callable, List[Callable]]]] = None,
         load_builtin_tools: bool = True,
+        litellm_kwargs: Optional[Dict[str, Any]] = None,
     ):
         self.session_id = session_id
         self.model = model
         self.max_iterations = max_iterations
+        self.litellm_kwargs = litellm_kwargs or {}
 
         model_info = {}
         try:
@@ -112,14 +114,14 @@ class Agent:
         if hook_name in self.hooks:
             hooks_val = self.hooks[hook_name]
             hooks_list = hooks_val if isinstance(hooks_val, list) else [hooks_val]
-            
+
             results = []
             for hook in hooks_list:
                 if asyncio.iscoroutinefunction(hook):
                     results.append(await hook(*args, **kwargs))
                 else:
                     results.append(hook(*args, **kwargs))
-            
+
             return results[0] if len(results) == 1 else results
 
     async def _get_all_tool_schemas(self) -> List[Dict[str, Any]]:
@@ -153,16 +155,22 @@ class Agent:
 
             tools_schema = await self._get_all_tool_schemas()
             kwargs = {"model": self.model, "messages": messages, "stream": True}
+            kwargs.update(self.litellm_kwargs)
             if tools_schema:
                 kwargs["tools"] = tools_schema
 
             response = await acompletion(**kwargs)
 
             collected_content = ""
+            collected_reasoning = ""
             tool_calls_dict = {}
 
             async for chunk in response:
                 delta = chunk.choices[0].delta
+
+                if getattr(delta, "reasoning_content", None):
+                    collected_reasoning += delta.reasoning_content
+                    yield {"type": "reasoning", "content": delta.reasoning_content}
 
                 if delta.content:
                     collected_content += delta.content
@@ -186,6 +194,8 @@ class Agent:
             message_dump = {"role": "assistant"}
             if collected_content:
                 message_dump["content"] = collected_content
+            if collected_reasoning:
+                message_dump["reasoning_content"] = collected_reasoning
             if tool_calls:
                 message_dump["tool_calls"] = tool_calls
 
