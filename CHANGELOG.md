@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## v0.6.0 (2026-04-19)
+
+### Features
+
+* feat: add reasoning/thinking support to tiny-agent-py via litellm ([`9086c8b`](https://github.com/ksm0709/tiny-agent-py/commit/9086c8b9b63117f21321c9f04c0cf247bacbac89))
+
+
 ## v0.5.0 (2026-04-19)
 
 ### Features
