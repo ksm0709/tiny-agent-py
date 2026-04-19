@@ -1,5 +1,8 @@
 import asyncio
 import json
+import litellm
+import glob
+import os
 from typing import List, Dict, Any, Callable, Optional
 from litellm import acompletion
 
@@ -25,8 +28,6 @@ class Agent:
         self.session_id = session_id
         self.model = model
         self.max_iterations = max_iterations
-
-        import litellm
 
         model_info = {}
         try:
@@ -65,17 +66,14 @@ class Agent:
                 self.system_prompt += f"\n\n<skill>\n--- Project Instructions (AGENTS.md) ---\n{agents_md}\n</skill>"
 
         for d in dirs:
-            import glob
-            import os
-
             for file in glob.glob(os.path.join(d, "*.md")):
                 if "AGENTS.md" in file:
                     continue
                 try:
                     skill = SkillLoader.load_from_file(file)
                     skills.append(skill)
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"Error loading skill {file}: {e}")
 
         if skills:
             self.system_prompt += "\n\n<skill>\n--- Available Skills ---\n"
