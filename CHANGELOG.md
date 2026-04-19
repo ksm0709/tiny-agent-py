@@ -1,6 +1,18 @@
 # CHANGELOG
 
 
+## v0.4.0 (2026-04-19)
+
+### Features
+
+* feat: add turn_start and turn_stop lifecycle tools and hooks
+
+- Introduce `turn_start` and `turn_stop` built-in tools to explicitly manage the agent's work cycle.
+- Add `on_turn_start` and `on_turn_stop` hooks.
+- Update system prompt to enforce their usage.
+- Update documentation in docs/builtin_tools.md. ([`75151a6`](https://github.com/ksm0709/tiny-agent-py/commit/75151a6bd0e1f93879401343ee8fa13a641e4019))
+
+
 ## v0.3.0 (2026-04-19)
 
 ### Chores
