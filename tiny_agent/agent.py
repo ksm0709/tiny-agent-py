@@ -1,7 +1,6 @@
 import asyncio
 import json
 import litellm
-import os
 from typing import List, Dict, Any, Callable, Optional
 from litellm import acompletion
 
@@ -18,7 +17,7 @@ class Agent:
         model: str = "openai/gpt-4o-mini",
         system_prompt: str = "You are a helpful assistant.",
         context_window_ratio: float = 0.8,
-        max_iterations: int = 10,
+        max_iterations: float = float("inf"),
         tools: Optional[List[Callable]] = None,
         mcp_servers: Optional[List[Dict[str, Any]]] = None,
         instruction_dirs: Optional[List[str]] = None,
