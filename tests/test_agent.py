@@ -224,3 +224,36 @@ async def test_agent_run(mock_acompletion):
         for r in responses
     )
     assert len(agent.memory.get_window()) == 2
+
+
+@pytest.mark.asyncio
+async def test_agent_turn_start_stop():
+    start_called = False
+    stop_called = False
+    start_goal = None
+    stop_result = None
+
+    async def on_turn_start(goal, agent):
+        nonlocal start_called, start_goal
+        start_called = True
+        start_goal = goal
+
+    async def on_turn_stop(result, agent):
+        nonlocal stop_called, stop_result
+        stop_called = True
+        stop_result = result
+
+    agent = Agent(
+        session_id="test_turns",
+        hooks={"on_turn_start": on_turn_start, "on_turn_stop": on_turn_stop},
+    )
+
+    start_res = await agent._execute_tool("turn_start", {"goal": "my goal"})
+    assert start_called
+    assert start_goal == "my goal"
+    assert "Turn started" in start_res
+
+    stop_res = await agent._execute_tool("turn_stop", {"result": "my result"})
+    assert stop_called
+    assert stop_result == "my result"
+    assert "Turn stopped" in stop_res

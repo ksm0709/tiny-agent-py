@@ -19,3 +19,9 @@ This gives the agent real-time access to the web to read API documentation, GitH
 ## 4. File Operations (`read_file`, `write_file`)
 Provides read and write access to the local filesystem.
 The agent uses these tools to edit source code, manage configuration files, and persist its work securely.
+
+## 5. Turn Lifecycle Hooks (`turn_start`, `turn_stop`)
+These implicit tools explicitly delimit the agent's work cycle:
+- `turn_start(goal: str)`: Signals the start of the task execution and the current target.
+- `turn_stop(result: str)`: Signals the completion of the task and outputs the result.
+The framework exposes hooks (`on_turn_start`, `on_turn_stop`) so integrating applications can track agent progress.

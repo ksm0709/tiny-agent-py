@@ -88,6 +88,26 @@ class Agent:
             )
             self.tools["load_skill"] = load_skill_tool
 
+        async def turn_start(goal: str) -> str:
+            await self._call_hook("on_turn_start", goal, self)
+            return f"Turn started with goal: {goal}"
+
+        async def turn_stop(result: str) -> str:
+            await self._call_hook("on_turn_stop", result, self)
+            return f"Turn stopped with result: {result}"
+
+        self.tools["turn_start"] = Tool(
+            func=turn_start,
+            name="turn_start",
+            description="MUST be called at the beginning of your turn to explicitly declare the task goal.",
+        )
+        self.tools["turn_stop"] = Tool(
+            func=turn_stop,
+            name="turn_stop",
+            description="MUST be called at the end of your turn to explicitly declare the task completion and provide the final result.",
+        )
+        self.system_prompt += "\n\nYou MUST call the `turn_start` tool at the beginning of your work to declare your goal. When you have completed your task, you MUST call the `turn_stop` tool to provide the final result."
+
     async def _call_hook(self, hook_name: str, *args, **kwargs):
         if hook_name in self.hooks:
             hook = self.hooks[hook_name]
