@@ -1,0 +1,25 @@
+{
+  "checks": [
+    { "name": "tests", "signal": ".context/.check-tests-passed" },
+    { "name": "git-clean", "signal": ".context/.check-git-clean-passed" }
+  ],
+  "smokeChecks": [
+    // === TESTING ===
+    {
+      "name": "tests",
+      "enabled": true,
+      "triggerCommand": "test -d tests",
+      "command": "pytest",
+      "signal": ".context/.check-tests-passed"
+    },
+
+    // === GIT ===
+    {
+      "name": "git-clean",
+      "enabled": false,
+      "triggerCommand": "git rev-parse --is-inside-work-tree",
+      "command": "git diff --exit-code && git diff --cached --exit-code",
+      "signal": ".context/.check-git-clean-passed"
+    }
+  ]
+}

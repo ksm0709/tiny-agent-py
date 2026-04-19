@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Redirect all output to stderr so the LLM sees the messages when exiting with code 2
+exec 1>&2
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+
+# Check if we should skip the hook (e.g., when agent is waiting for background tasks)
+if [ -f "$ROOT/.skip-hook" ]; then
+    rm "$ROOT/.skip-hook"
+    exit 0
+fi
+
+# Check if there are any tracked or untracked changes
+if git diff HEAD --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+    exit 0
+fi
+cd "$ROOT/cli" || exit 2
+
+# Run quality gates — only show output on failure
+FMT_OUT=$(uv run ruff format . 2>&1) || { echo "Formatting failed."; echo "$FMT_OUT"; exit 2; }
+LINT_OUT=$(uv run ruff check --fix . 2>&1) || { echo "Linting failed."; echo "$LINT_OUT"; exit 2; }
+TEST_OUT=$(uv run pytest tests/ -q 2>&1) || { echo "Tests failed."; echo "$TEST_OUT"; exit 2; }
+
+echo "Code changes are present. All quality gates (lint, format, test) PASSED! If no new request has been submitted, commit and push the changes by yourself."
+echo "QUALITY MAINTENANCE ITEM: Ensure that README.md, docs/, and plugin/skills/SKILL.md are updated to reflect your changes before completing the task."
+exit 2
