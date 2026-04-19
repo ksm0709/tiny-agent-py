@@ -31,6 +31,30 @@ class Agent:
         self.max_iterations = max_iterations
         self.litellm_kwargs = litellm_kwargs or {}
 
+        try:
+            from litellm.utils import get_supported_openai_params
+
+            supported_params = get_supported_openai_params(model=self.model) or []
+
+            # Auto-enable reasoning if the model supports it and client didn't specify
+            model_lower = self.model.lower()
+            if "thinking" in supported_params and "thinking" not in self.litellm_kwargs:
+                if "anthropic" in model_lower or "claude" in model_lower:
+                    self.litellm_kwargs["thinking"] = {
+                        "type": "enabled",
+                        "budget_tokens": 4096,
+                    }
+
+            if (
+                "reasoning_effort" in supported_params
+                and "reasoning_effort" not in self.litellm_kwargs
+            ):
+                if not ("anthropic" in model_lower or "claude" in model_lower):
+                    self.litellm_kwargs["reasoning_effort"] = "medium"
+
+        except Exception:
+            pass
+
         model_info = {}
         try:
             model_info = litellm.get_model_info(model) or {}

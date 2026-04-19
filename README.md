@@ -10,7 +10,7 @@ Unlike massive frameworks (e.g., LangChain, AutoGen), `tiny-agent-py` avoids blo
 - **Dynamic Context Window**: Prevents context overflow by keeping the working memory under `N%` of the selected model's total context token limit.
 - **SQLite Spillover Memory**: Archives older messages to a per-session SQLite database, ensuring full history retention without token limits.
 - **Cross-Session Search**: Built-in tools for the agent to query past conversations.
-- **Reasoning & Thinking**: Native support for streaming reasoning content (Anthropic Claude 3.7, OpenAI o1/o3, DeepSeek R1, Gemini 2.0 Flash Thinking) via `litellm_kwargs` and `reasoning` events.
+- **Reasoning & Thinking**: Auto-enables reasoning for capable models (Anthropic Claude 3.7, OpenAI o1/o3, DeepSeek R1, Gemini 2.0 Flash Thinking) with native support for streaming `reasoning` events. Custom configuration is also supported via `litellm_kwargs`.
 - **Task Management**: Built-in `manage_tasks` tool that pins task lists and descriptions directly to the agent's system prompt (context window manager) so they never slide out of memory.
 - **Native Built-in Tools**: Essential tools (Python REPL, Bash Shell, Web Scraper, File I/O) are included and automatically loaded out-of-the-box. These tools include safety guards to restrict file access to the user's home directory and block access to sensitive files like `.env`, `/etc/`, `.ssh/`, `.bashrc`, and `.git/config`.
 - **Markdown Skills (`AGENTS.md`)**: Automatically injects project instructions into the system prompt. Individual skills are scanned and lazy-loaded via the `load_skill` tool to save token usage and prevent context overflow.
