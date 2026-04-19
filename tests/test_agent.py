@@ -52,6 +52,25 @@ async def test_agent_call_hook():
 
 
 @pytest.mark.asyncio
+async def test_agent_call_multiple_hooks():
+    calls = []
+
+    def hook1(*args, **kwargs):
+        calls.append("hook1")
+        return 1
+
+    async def hook2(*args, **kwargs):
+        calls.append("hook2")
+        return 2
+
+    agent = Agent(session_id="test", hooks={"multi": [hook1, hook2]})
+
+    res = await agent._call_hook("multi")
+    assert calls == ["hook1", "hook2"]
+    assert res == [1, 2]
+
+
+@pytest.mark.asyncio
 async def test_agent_execute_tool():
     @tool(name="test_tool")
     def my_tool(x: int):

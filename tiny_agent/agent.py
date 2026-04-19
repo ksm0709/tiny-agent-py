@@ -1,7 +1,7 @@
 import asyncio
 import json
 import litellm
-from typing import List, Dict, Any, Callable, Optional
+from typing import List, Dict, Any, Callable, Optional, Union
 from litellm import acompletion
 
 from .memory import SessionMemory
@@ -22,7 +22,7 @@ class Agent:
         mcp_servers: Optional[List[Dict[str, Any]]] = None,
         instruction_dirs: Optional[List[str]] = None,
         skills_dirs: Optional[List[str]] = None,
-        hooks: Optional[Dict[str, Callable]] = None,
+        hooks: Optional[Dict[str, Union[Callable, List[Callable]]]] = None,
         load_builtin_tools: bool = True,
     ):
         self.session_id = session_id
@@ -110,11 +110,17 @@ class Agent:
 
     async def _call_hook(self, hook_name: str, *args, **kwargs):
         if hook_name in self.hooks:
-            hook = self.hooks[hook_name]
-            if asyncio.iscoroutinefunction(hook):
-                return await hook(*args, **kwargs)
-            else:
-                return hook(*args, **kwargs)
+            hooks_val = self.hooks[hook_name]
+            hooks_list = hooks_val if isinstance(hooks_val, list) else [hooks_val]
+            
+            results = []
+            for hook in hooks_list:
+                if asyncio.iscoroutinefunction(hook):
+                    results.append(await hook(*args, **kwargs))
+                else:
+                    results.append(hook(*args, **kwargs))
+            
+            return results[0] if len(results) == 1 else results
 
     async def _get_all_tool_schemas(self) -> List[Dict[str, Any]]:
         schemas = [t.get_schema() for t in self.tools.values()]
