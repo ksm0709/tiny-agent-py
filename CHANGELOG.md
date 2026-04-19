@@ -1,6 +1,17 @@
 # CHANGELOG
 
 
+## v0.7.0 (2026-04-19)
+
+### Features
+
+* feat: add 'manage_tasks' built-in tool and Reasoning capabilities
+- Added 'manage_tasks' tool that keeps tasks and their descriptions pinned to the agent's context window.
+- Updated Agent loop to support passing litellm_kwargs and streaming reasoning/thinking blocks.
+- Updated README.md to include Task Management and Reasoning capabilities.
+- Updated docs/builtin_tools.md to document the new manage_tasks tool. ([`c887a6f`](https://github.com/ksm0709/tiny-agent-py/commit/c887a6f0cd9bf5ff9b142b970f78a3391fc66474))
+
+
 ## v0.6.0 (2026-04-19)
 
 ### Features
