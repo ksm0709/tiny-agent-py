@@ -22,7 +22,6 @@ A hyper-minimalist, `litellm`-based AI agent framework for Python. Provides the 
 | `tiny_agent/` | Core Python package — agent loop, tools, memory, MCP, skills (see `tiny_agent/AGENTS.md`) |
 | `tests/` | pytest test suite covering all core modules (see `tests/AGENTS.md`) |
 | `docs/` | Feature-level Markdown documentation (see `docs/AGENTS.md`) |
-| `.github/workflows/` | GitHub Actions CI for tests and semantic release |
 
 ## For AI Agents
 
