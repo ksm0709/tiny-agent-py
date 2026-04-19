@@ -4,6 +4,7 @@ import urllib.request
 import os
 from html.parser import HTMLParser
 from tiny_agent.tools import tool
+from tiny_agent.safety import is_safe_path, is_safe_command
 
 
 class TextExtractor(HTMLParser):
@@ -21,6 +22,9 @@ class TextExtractor(HTMLParser):
     description="Executes Python code in a secure temporary environment. Returns stdout/stderr. Use for data processing, calculations, or quick scripts. Avoid long-running or infinite loops.",
 )
 def execute_python(code: str, timeout: int = 10) -> str:
+    # Python code execution is inherently risky, but we can at least block sensitive file access
+    # within the code if we wanted to, but that's hard.
+    # For now, we'll just allow it as it runs in a temp file.
     with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(code)
         temp_path = f.name
@@ -44,6 +48,8 @@ def execute_python(code: str, timeout: int = 10) -> str:
     description="Executes a Bash shell command. Returns stdout/stderr. Use for system operations, file management, or installing dependencies. Always prefer specific tools if available.",
 )
 def execute_shell(command: str, timeout: int = 30) -> str:
+    if not is_safe_command(command):
+        return "Error: Command blocked for security reasons."
     try:
         result = subprocess.run(
             command, shell=True, capture_output=True, text=True, timeout=timeout
@@ -76,6 +82,8 @@ def fetch_webpage(url: str) -> str:
     description="Reads the entire content of a local file. Use to inspect code, configuration, or data files.",
 )
 def read_file(filepath: str) -> str:
+    if not is_safe_path(filepath):
+        return "Error: Access to this file is blocked for security reasons."
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             return f.read()
@@ -88,6 +96,8 @@ def read_file(filepath: str) -> str:
     description="Writes content to a local file. Overwrites existing content. Use to create or update files.",
 )
 def write_file(filepath: str, content: str) -> str:
+    if not is_safe_path(filepath):
+        return "Error: Access to this file is blocked for security reasons."
     try:
         os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
         with open(filepath, "w", encoding="utf-8") as f:

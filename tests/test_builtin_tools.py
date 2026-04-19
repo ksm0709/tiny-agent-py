@@ -48,8 +48,10 @@ async def test_fetch_webpage(mock_urlopen):
 
 
 @pytest.mark.asyncio
-async def test_file_operations():
-    with tempfile.TemporaryDirectory() as temp_dir:
+async def test_file_operations_safety():
+    # Test safe file
+    home = os.path.expanduser("~")
+    with tempfile.TemporaryDirectory(dir=home) as temp_dir:
         filepath = os.path.join(temp_dir, "test.txt")
 
         write_res = await write_file.__tool__.execute(
@@ -60,10 +62,26 @@ async def test_file_operations():
         read_res = await read_file.__tool__.execute(filepath=filepath)
         assert read_res == "File test"
 
-        error_res = await read_file.__tool__.execute(
-            filepath=os.path.join(temp_dir, "fake.txt")
-        )
-        assert "Error reading file" in error_res
+    # Test unsafe file
+    unsafe_filepath = "/etc/passwd"
+    read_res = await read_file.__tool__.execute(filepath=unsafe_filepath)
+    assert "Error: Access to this file is blocked" in read_res
+
+    write_res = await write_file.__tool__.execute(
+        filepath=unsafe_filepath, content="hack"
+    )
+    assert "Error: Access to this file is blocked" in write_res
+
+
+@pytest.mark.asyncio
+async def test_execute_shell_safety():
+    # Test safe command
+    result = await execute_shell.__tool__.execute(command="echo 'Bash'")
+    assert "Bash" in result
+
+    # Test unsafe command
+    result = await execute_shell.__tool__.execute(command="cat /etc/passwd")
+    assert "Error: Command blocked" in result
 
 
 @pytest.mark.asyncio
