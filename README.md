@@ -10,13 +10,14 @@ Unlike massive frameworks (e.g., LangChain, AutoGen), `tiny-agent-py` avoids blo
 - **Dynamic Context Window**: Prevents context overflow by keeping the working memory under `N%` of the selected model's total context token limit.
 - **SQLite Spillover Memory**: Archives older messages to a per-session SQLite database, ensuring full history retention without token limits.
 - **Cross-Session Search**: Built-in tools for the agent to query past conversations.
-- **Native MCP Client**: Seamlessly connect to external Model Context Protocol (MCP) servers via `stdio`.
+- **Native Built-in Tools**: Essential tools (Python REPL, Bash Shell, Web Scraper, File I/O) are included and automatically loaded out-of-the-box.
 - **Markdown Skills (`AGENTS.md`)**: Automatically injects project instructions and dynamic markdown-based skills into the system prompt.
 - **`@tool` Decorator**: Turn any Python function into an LLM-accessible tool with zero boilerplate.
 
 ## Documentation
 
 For deep dives into specific features, check out our documentation:
+- [Built-in Tools](docs/builtin_tools.md) - Learn about the native REPL, Web Fetcher, and File Manager.
 - [Memory Management](docs/memory.md) - Learn how the sliding-window and SQLite spillover work.
 - [MCP Integration](docs/mcp.md) - How to connect to external MCP servers.
 - [Tools & `@tool`](docs/tools.md) - Guide to writing custom Python tools.

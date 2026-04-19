@@ -20,6 +20,7 @@ class Agent:
         mcp_servers: Optional[List[Dict[str, Any]]] = None,
         skills_dirs: Optional[List[str]] = None,
         hooks: Optional[Dict[str, Callable]] = None,
+        load_builtin_tools: bool = True,
     ):
         self.session_id = session_id
         self.model = model
@@ -38,11 +39,18 @@ class Agent:
         self.memory = SessionMemory(
             session_id=session_id, model=model, max_window_tokens=self.max_window_tokens
         )
-        self.tools = {
-            getattr(t, "__tool__").name: getattr(t, "__tool__")
-            for t in (tools or [])
-            if hasattr(t, "__tool__")
-        }
+
+        self.tools = {}
+        if load_builtin_tools:
+            from .builtin_tools import BUILTIN_TOOLS
+
+            for t in BUILTIN_TOOLS:
+                self.tools[getattr(t, "__tool__").name] = getattr(t, "__tool__")
+
+        for t in tools or []:
+            if hasattr(t, "__tool__"):
+                self.tools[getattr(t, "__tool__").name] = getattr(t, "__tool__")
+
         self.mcp_manager = MCPManager(mcp_servers or [])
         self.hooks = hooks or {}
 
