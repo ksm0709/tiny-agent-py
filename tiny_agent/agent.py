@@ -110,6 +110,34 @@ class Agent:
         )
         self.system_prompt += "\n\nYou MUST call the `turn_start` tool at the beginning of your work to declare your goal. When you have completed your task, you MUST call the `turn_stop` tool to provide the final result."
 
+        self.tasks = []
+
+        def manage_tasks(tasks: List[Dict[str, str]]) -> str:
+            self.tasks = tasks
+            print("\n" + "=" * 40)
+            print("📝 TASK LIST UPDATED")
+            print("=" * 40)
+            for t in tasks:
+                status = str(t.get("status", "pending")).lower()
+                title = t.get("title", "Untitled")
+
+                if status in ["done", "completed", "[x]", "x"]:
+                    status_icon = "[x]"
+                elif status in ["in_progress", "working", "[-]", "-"]:
+                    status_icon = "[-]"
+                else:
+                    status_icon = "[ ]"
+
+                print(f"{status_icon} {title}")
+            print("=" * 40 + "\n")
+            return "Task list updated successfully. The tasks are now pinned to your system prompt."
+
+        self.tools["manage_tasks"] = Tool(
+            func=manage_tasks,
+            name="manage_tasks",
+            description="Manage the agent's task/todo list. Tasks stay in the context window. Provide a list of dictionaries with 'status' ('pending', 'in_progress', 'done'), 'title', and 'description'.",
+        )
+
     async def _call_hook(self, hook_name: str, *args, **kwargs):
         if hook_name in self.hooks:
             hooks_val = self.hooks[hook_name]
@@ -148,7 +176,19 @@ class Agent:
         iteration = 0
         while iteration < self.max_iterations:
             iteration += 1
-            messages = [{"role": "system", "content": self.system_prompt}]
+
+            current_system_prompt = self.system_prompt
+            if getattr(self, "tasks", None):
+                current_system_prompt += "\n\n<current_tasks>\n"
+                for i, t in enumerate(self.tasks):
+                    current_system_prompt += f"Task {i + 1}:\n"
+                    current_system_prompt += f"  Status: {t.get('status', 'pending')}\n"
+                    current_system_prompt += f"  Title: {t.get('title', 'Untitled')}\n"
+                    if "description" in t:
+                        current_system_prompt += f"  Description: {t['description']}\n"
+                current_system_prompt += "</current_tasks>\n"
+
+            messages = [{"role": "system", "content": current_system_prompt}]
             messages.extend(self.memory.get_window())
 
             await self._call_hook("pre_call", messages, self)

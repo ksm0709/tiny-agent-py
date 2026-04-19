@@ -25,3 +25,7 @@ These implicit tools explicitly delimit the agent's work cycle:
 - `turn_start(goal: str)`: Signals the start of the task execution and the current target.
 - `turn_stop(result: str)`: Signals the completion of the task and outputs the result.
 The framework exposes hooks (`on_turn_start`, `on_turn_stop`) so integrating applications can track agent progress.
+
+## 6. Task Management (`manage_tasks`)
+Provides an agent context window manager that pins tasks directly to the system prompt.
+The tool maintains a task/todo list containing `status`, `title`, and `description`. To prevent the context window from getting cluttered via standard standard output, the tool only prints the checkbox status and title to the stdout, while keeping the full rich descriptions securely attached to the agent's "static memory" system prompt so that they never slide out of context.
