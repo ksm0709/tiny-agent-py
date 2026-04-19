@@ -1,6 +1,6 @@
 [project]
 name = "tiny-agent-py"
-version = "0.1.1"
+version = "0.1.2"
 description = "A hyper-minimal, litellm-based agent framework with sliding-window SQLite memory and MCP support"
 authors = [{ name = "Author", email = "author@example.com" }]
 license = { text = "MIT" }

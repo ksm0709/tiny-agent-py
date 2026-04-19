@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## v0.1.2 (2026-04-19)
+
+### Bug Fixes
+
+* fix: skip python-semantic-release internal build step to prevent permission errors ([`d440aad`](https://github.com/ksm0709/tiny-agent-py/commit/d440aad582867ddbae7c3cf4f86002d8140284ab))
+
+
 ## v0.1.1 (2026-04-19)
 
 ### Bug Fixes
