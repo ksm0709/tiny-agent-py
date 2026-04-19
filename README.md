@@ -71,9 +71,18 @@ async def main():
         ]
     )
     
-    # 3. Run the agent
-    response = await agent.run("What is the weather in Seoul today? Also, check if test.db has any tables.")
-    print(response)
+    # 3. Run the agent (streaming)
+    print("Agent: ", end="")
+    async for chunk in agent.run("What is the weather in Seoul today? Also, check if test.db has any tables."):
+        if chunk["type"] == "content":
+            print(chunk["content"], end="", flush=True)
+        elif chunk["type"] == "tool_start":
+            print(f"\n[Tool calling: {chunk['name']}]")
+        elif chunk["type"] == "tool_end":
+            print(f"[Tool finished: {chunk['name']}]")
+        elif chunk["type"] == "error":
+            print(f"\n[Error: {chunk['content']}]")
+    print()
 
 if __name__ == "__main__":
     asyncio.run(main())
