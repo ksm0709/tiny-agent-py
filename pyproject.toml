@@ -26,7 +26,7 @@ version_toml = [
 version_variables = [
     "tiny_agent/__init__.py:__version__"
 ]
-build_command = "pip install build && python -m build"
+build_command = "true"
 
 [dependency-groups]
 dev = [
