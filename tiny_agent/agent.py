@@ -95,6 +95,16 @@ class Agent:
             return f"Turn started with goal: {goal}"
 
         async def turn_stop(result: str) -> str:
+            if getattr(self, "tasks", None):
+                pending_tasks = [
+                    t
+                    for t in self.tasks
+                    if str(t.get("status", "pending")).lower()
+                    not in ["done", "completed", "[x]", "x", "cancelled"]
+                ]
+                if pending_tasks:
+                    return f"Error: Cannot stop turn. There are {len(pending_tasks)} pending tasks remaining. Please complete or cancel them using the manage_tasks tool first."
+
             await self._call_hook("on_turn_stop", result, self)
             return f"Turn stopped with result: {result}"
 
@@ -108,7 +118,7 @@ class Agent:
             name="turn_stop",
             description="MUST be called at the end of your turn to explicitly declare the task completion and provide the final result.",
         )
-        self.system_prompt += "\n\nYou MUST call the `turn_start` tool at the beginning of your work to declare your goal. When you have completed your task, you MUST call the `turn_stop` tool to provide the final result."
+        self.system_prompt += "\n\nYou MUST call the `turn_start` tool at the beginning of your work to declare your goal. When you have completed your task, you MUST call the `turn_stop` tool to provide the final result. If the work is complex and multi-step, you MUST use the `manage_tasks` tool to plan your work before executing it."
 
         self.tasks = []
 
