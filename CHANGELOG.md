@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## v0.12.0 (2026-04-19)
+
+### Features
+
+* feat: auto-enable reasoning for capable models via litellm ([`6d86349`](https://github.com/ksm0709/tiny-agent-py/commit/6d863493d19aaa5f89e47a453ecf6844e3dfe430))
+
+
 ## v0.11.0 (2026-04-19)
 
 ### Bug Fixes
