@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v0.0.1 (2026-04-19)
+
+### Bug Fixes
+
+* fix: manage_tasks JSON string parsing and schema generation ([`2dd0c97`](https://github.com/ksm0709/tiny-agent-py/commit/2dd0c9752b69fa3a6b025804626fd5967d40aab7))
+
+
+## v0.0.0 (2026-04-19)
+
+### Testing
+
+* test: refactor e2e tests and cover reasoning events and manage_tasks ([`d92d225`](https://github.com/ksm0709/tiny-agent-py/commit/d92d225e1b3dd8499cb0dd6ea04b2948e9510014))
+
+
 ## v0.8.0 (2026-04-19)
 
 ### Features
