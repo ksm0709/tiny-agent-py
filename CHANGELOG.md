@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.8.0 (2026-04-19)
+
+### Features
+
+* feat: update docs with turn_stop validation and manage_tasks enforcement ([`cca4348`](https://github.com/ksm0709/tiny-agent-py/commit/cca434857e559abf6c267fc66ab51f7d5958f699))
+
+* feat: add tasks native tool for context window pinning
+
+Ultraworked with [Sisyphus](https://github.com/code-yeongyu/oh-my-openagent)
+
+Co-authored-by: Sisyphus <clio-agent@sisyphuslabs.ai> ([`37999eb`](https://github.com/ksm0709/tiny-agent-py/commit/37999eb3ef472faff9eb9df3042e1f3fb644ee32))
+
+
 ## v0.7.0 (2026-04-19)
 
 ### Features
