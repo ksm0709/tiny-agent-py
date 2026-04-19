@@ -15,7 +15,6 @@ fi
 if git diff HEAD --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
     exit 0
 fi
-cd "$ROOT/cli" || exit 2
 
 # Run quality gates — only show output on failure
 FMT_OUT=$(uv run ruff format . 2>&1) || { echo "Formatting failed."; echo "$FMT_OUT"; exit 2; }

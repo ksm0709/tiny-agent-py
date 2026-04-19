@@ -1,8 +1,8 @@
-import asyncio
 from typing import Dict, Any, List
 from mcp.client.stdio import stdio_client
 from mcp.client.session import ClientSession
 from mcp import StdioServerParameters
+
 
 class MCPManager:
     def __init__(self, mcp_servers: List[Dict[str, Any]]):
@@ -17,13 +17,14 @@ class MCPManager:
             command = server.get("command")
             args = server.get("args", [])
             env = server.get("env", None)
-            
+
             if not command:
                 continue
 
             try:
                 params = StdioServerParameters(command=command, args=args, env=env)
                 from contextlib import AsyncExitStack
+
                 stack = AsyncExitStack()
                 self._exit_stack.append(stack)
 
@@ -31,10 +32,10 @@ class MCPManager:
                 read, write = transport
                 session = await stack.enter_async_context(ClientSession(read, write))
                 await session.initialize()
-                
+
                 self.sessions[server_name] = session
                 tools_response = await session.list_tools()
-                
+
                 for t in tools_response.tools:
                     tool_id = f"mcp__{server_name}__{t.name}"
                     self.mcp_tools[tool_id] = {
@@ -45,9 +46,9 @@ class MCPManager:
                             "function": {
                                 "name": tool_id,
                                 "description": t.description or "",
-                                "parameters": t.inputSchema
-                            }
-                        }
+                                "parameters": t.inputSchema,
+                            },
+                        },
                     }
             except Exception as e:
                 print(f"[Warning] Failed to connect to MCP server '{server_name}': {e}")
@@ -59,11 +60,11 @@ class MCPManager:
     async def execute_tool(self, tool_id: str, arguments: Dict[str, Any]) -> str:
         if tool_id not in self.mcp_tools:
             return f"Error: MCP tool {tool_id} not found."
-        
+
         tool_data = self.mcp_tools[tool_id]
         session = tool_data["session"]
         original_name = tool_data["original_name"]
-        
+
         try:
             result = await session.call_tool(original_name, arguments=arguments)
             if result.isError:

@@ -1,13 +1,17 @@
 import os
 import yaml
-from typing import Dict, Any, List
+from typing import Any, List
+
 
 class Skill:
-    def __init__(self, name: str, description: str, instructions: str, tools: List[Any] = None):
+    def __init__(
+        self, name: str, description: str, instructions: str, tools: List[Any] = None
+    ):
         self.name = name
         self.description = description
         self.instructions = instructions
         self.tools = tools or []
+
 
 class SkillLoader:
     @staticmethod
@@ -29,10 +33,10 @@ class SkillLoader:
                     instructions = parts[2].strip()
                 except yaml.YAMLError:
                     pass
-        
+
         name = metadata.get("name", os.path.basename(file_path).split(".")[0])
         description = metadata.get("description", "")
-        
+
         return Skill(name=name, description=description, instructions=instructions)
 
     @staticmethod

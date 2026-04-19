@@ -4,9 +4,9 @@ from typing import List, Dict, Any, Callable, Optional
 from litellm import acompletion
 
 from .memory import SessionMemory
-from .tools import Tool
-from .skills import SkillLoader, Skill
+from .skills import SkillLoader
 from .mcp_manager import MCPManager
+
 
 class Agent:
     def __init__(
@@ -19,16 +19,22 @@ class Agent:
         tools: Optional[List[Callable]] = None,
         mcp_servers: Optional[List[Dict[str, Any]]] = None,
         skills_dirs: Optional[List[str]] = None,
-        hooks: Optional[Dict[str, Callable]] = None
+        hooks: Optional[Dict[str, Callable]] = None,
     ):
         self.session_id = session_id
         self.model = model
         self.max_iterations = max_iterations
-        self.memory = SessionMemory(session_id=session_id, max_window_messages=max_context_window)
-        self.tools = {getattr(t, "__tool__").name: getattr(t, "__tool__") for t in (tools or []) if hasattr(t, "__tool__")}
+        self.memory = SessionMemory(
+            session_id=session_id, max_window_messages=max_context_window
+        )
+        self.tools = {
+            getattr(t, "__tool__").name: getattr(t, "__tool__")
+            for t in (tools or [])
+            if hasattr(t, "__tool__")
+        }
         self.mcp_manager = MCPManager(mcp_servers or [])
         self.hooks = hooks or {}
-        
+
         self.system_prompt = system_prompt
         self._load_skills(skills_dirs or [])
 
@@ -38,12 +44,14 @@ class Agent:
             agents_md = SkillLoader.load_agents_md(d)
             if agents_md:
                 self.system_prompt += f"\n\n<skill>\n--- Project Instructions (AGENTS.md) ---\n{agents_md}\n</skill>"
-        
+
         for d in dirs:
             import glob
             import os
+
             for file in glob.glob(os.path.join(d, "*.md")):
-                if "AGENTS.md" in file: continue
+                if "AGENTS.md" in file:
+                    continue
                 try:
                     skill = SkillLoader.load_from_file(file)
                     skills.append(skill)
@@ -84,7 +92,7 @@ class Agent:
     async def run(self, user_input: str):
         await self.mcp_manager.connect_all()
         self.memory.add_message({"role": "user", "content": user_input})
-        
+
         iteration = 0
         while iteration < self.max_iterations:
             iteration += 1
@@ -99,30 +107,32 @@ class Agent:
                 kwargs["tools"] = tools_schema
 
             response = await acompletion(**kwargs)
-            
+
             collected_content = ""
             tool_calls_dict = {}
 
             async for chunk in response:
                 delta = chunk.choices[0].delta
-                
+
                 if delta.content:
                     collected_content += delta.content
                     yield {"type": "content", "content": delta.content}
-                
+
                 if delta.tool_calls:
                     for tc in delta.tool_calls:
                         if tc.index not in tool_calls_dict:
                             tool_calls_dict[tc.index] = {
                                 "id": tc.id,
                                 "type": "function",
-                                "function": {"name": tc.function.name, "arguments": ""}
+                                "function": {"name": tc.function.name, "arguments": ""},
                             }
                         if tc.function.arguments:
-                            tool_calls_dict[tc.index]["function"]["arguments"] += tc.function.arguments
+                            tool_calls_dict[tc.index]["function"]["arguments"] += (
+                                tc.function.arguments
+                            )
 
             tool_calls = list(tool_calls_dict.values()) if tool_calls_dict else None
-            
+
             message_dump = {"role": "assistant"}
             if collected_content:
                 message_dump["content"] = collected_content
@@ -136,25 +146,30 @@ class Agent:
                 for tool_call in tool_calls:
                     func_name = tool_call["function"]["name"]
                     yield {"type": "tool_start", "name": func_name}
-                    
+
                     try:
                         func_args = json.loads(tool_call["function"]["arguments"])
                         tool_result = await self._execute_tool(func_name, func_args)
                     except Exception as e:
                         tool_result = f"Error processing arguments: {str(e)}"
-                        
+
                     yield {"type": "tool_end", "name": func_name, "result": tool_result}
-                    
-                    self.memory.add_message({
-                        "role": "tool",
-                        "name": func_name,
-                        "tool_call_id": tool_call["id"],
-                        "content": tool_result
-                    })
+
+                    self.memory.add_message(
+                        {
+                            "role": "tool",
+                            "name": func_name,
+                            "tool_call_id": tool_call["id"],
+                            "content": tool_result,
+                        }
+                    )
                 continue
-            
+
             await self.mcp_manager.close_all()
             return
-            
+
         await self.mcp_manager.close_all()
-        yield {"type": "error", "content": f"Max iterations ({self.max_iterations}) reached."}
+        yield {
+            "type": "error",
+            "content": f"Max iterations ({self.max_iterations}) reached.",
+        }
