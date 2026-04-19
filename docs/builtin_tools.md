@@ -23,9 +23,11 @@ The agent uses these tools to edit source code, manage configuration files, and 
 ## 5. Turn Lifecycle Hooks (`turn_start`, `turn_stop`)
 These implicit tools explicitly delimit the agent's work cycle:
 - `turn_start(goal: str)`: Signals the start of the task execution and the current target.
-- `turn_stop(result: str)`: Signals the completion of the task and outputs the result.
+- `turn_stop(result: str)`: Signals the completion of the task and outputs the result. **Note:** `turn_stop` will fail if there are any pending tasks remaining in the `manage_tasks` list.
 The framework exposes hooks (`on_turn_start`, `on_turn_stop`) so integrating applications can track agent progress.
 
 ## 6. Task Management (`manage_tasks`)
 Provides an agent context window manager that pins tasks directly to the system prompt.
-The tool maintains a task/todo list containing `status`, `title`, and `description`. To prevent the context window from getting cluttered via standard standard output, the tool only prints the checkbox status and title to the stdout, while keeping the full rich descriptions securely attached to the agent's "static memory" system prompt so that they never slide out of context.
+The tool maintains a task/todo list containing `status`, `title`, and `description`. To prevent the context window from getting cluttered via standard output, the tool only prints the checkbox status and title to the stdout, while keeping the full rich descriptions securely attached to the agent's "static memory" system prompt so that they never slide out of context.
+
+**Note:** For complex multi-step work, the agent is enforced to use this tool to plan tasks before executing them. You must complete or cancel all tasks using this tool before `turn_stop` can succeed.
