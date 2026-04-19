@@ -122,7 +122,13 @@ class Agent:
 
         self.tasks = []
 
-        def manage_tasks(tasks: List[Dict[str, str]]) -> str:
+        def manage_tasks(tasks: Union[List[Dict[str, str]], str]) -> str:
+            if isinstance(tasks, str):
+                try:
+                    tasks = json.loads(tasks)
+                except Exception:
+                    return "Error: tasks must be a valid JSON array of objects."
+
             self.tasks = tasks
             print("\n" + "=" * 40)
             print("📝 TASK LIST UPDATED")

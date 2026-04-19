@@ -6,9 +6,11 @@ from unittest.mock import patch, MagicMock
 from tiny_agent.agent import Agent
 from tiny_agent.tools import tool
 
+
 @tool(name="local_calculator", description="Adds two integers")
 def local_calculator(a: int, b: int) -> int:
     return a + b
+
 
 @pytest.fixture
 def agent_setup():
@@ -33,6 +35,7 @@ def agent_setup():
             instruction_dirs=[skill_dir],
         )
         yield agent, skill_dir
+
 
 @pytest.mark.asyncio
 @patch("litellm.token_counter", return_value=100)
@@ -137,12 +140,12 @@ async def test_agent_end_to_end_flow(
     window = agent.memory.get_window()
     assert len(window) == 5
     assert (
-        window[-1]["content"]
-        == "Calculated 15 and queried the database successfully."
+        window[-1]["content"] == "Calculated 15 and queried the database successfully."
     )
 
     assert "Global E2E Project Instructions" in agent.system_prompt
     assert "e2e_skill" in agent.system_prompt
+
 
 @pytest.mark.asyncio
 @patch("litellm.token_counter", return_value=100)
@@ -178,6 +181,7 @@ async def test_agent_reasoning_event(
 
     content_chunks = [r["content"] for r in responses if r.get("type") == "content"]
     assert "Final answer." in "".join(content_chunks)
+
 
 @pytest.mark.asyncio
 @patch("litellm.token_counter", return_value=100)

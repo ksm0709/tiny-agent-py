@@ -1,6 +1,6 @@
 import inspect
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, get_origin
 import json
 
 
@@ -24,15 +24,16 @@ class Tool:
         for param_name, param in sig.parameters.items():
             param_type = "string"
             if param.annotation is not inspect.Parameter.empty:
-                if param.annotation is int:
+                origin = get_origin(param.annotation) or param.annotation
+                if origin is int:
                     param_type = "integer"
-                elif param.annotation is float:
+                elif origin is float:
                     param_type = "number"
-                elif param.annotation is bool:
+                elif origin is bool:
                     param_type = "boolean"
-                elif param.annotation is list or param.annotation is List:
+                elif origin is list or origin is List:
                     param_type = "array"
-                elif param.annotation is dict or param.annotation is Dict:
+                elif origin is dict or origin is Dict:
                     param_type = "object"
 
             properties[param_name] = {"type": param_type}
