@@ -1,6 +1,35 @@
 # CHANGELOG
 
 
+## v0.11.0 (2026-04-19)
+
+### Bug Fixes
+
+* fix: force release to verify corrected tag sequence ([`f967551`](https://github.com/ksm0709/tiny-agent-py/commit/f967551a6a5eb6b0e6bda52308d3dfe1a2b00d8b))
+
+### Documentation
+
+* docs: document safety guards in builtin tools ([`6863fc7`](https://github.com/ksm0709/tiny-agent-py/commit/6863fc750e26af819bf4d1e816fd9f5c0e6a9481))
+
+### Features
+
+* feat: integrate safety guards into built-in tools
+
+Ultraworked with [Sisyphus](https://github.com/code-yeongyu/oh-my-openagent)
+
+Co-authored-by: Sisyphus <clio-agent@sisyphuslabs.ai> ([`0e6b558`](https://github.com/ksm0709/tiny-agent-py/commit/0e6b55871b13fc52fbc88e6e1ec29cba1870a42c))
+
+* feat: add safety guard implementation
+
+Ultraworked with [Sisyphus](https://github.com/code-yeongyu/oh-my-openagent)
+
+Co-authored-by: Sisyphus <clio-agent@sisyphuslabs.ai> ([`a676eaf`](https://github.com/ksm0709/tiny-agent-py/commit/a676eaf33f5d14fa0afa3593578a3453f50e777c))
+
+### Refactoring
+
+* refactor: update built-in tool descriptions for clarity and correct usage ([`f988924`](https://github.com/ksm0709/tiny-agent-py/commit/f98892483020a5ffb85e1c742f6948066464d3b5))
+
+
 ## v0.10.0 (2026-04-19)
 
 ### Bug Fixes
