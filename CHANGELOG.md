@@ -1,14 +1,14 @@
 # CHANGELOG
 
 
-## v0.0.1 (2026-04-19)
+## v0.10.0 (2026-04-19)
 
 ### Bug Fixes
 
 * fix: manage_tasks JSON string parsing and schema generation ([`2dd0c97`](https://github.com/ksm0709/tiny-agent-py/commit/2dd0c9752b69fa3a6b025804626fd5967d40aab7))
 
 
-## v0.0.0 (2026-04-19)
+## v0.9.0 (2026-04-19)
 
 ### Testing
 

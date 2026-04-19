@@ -11,6 +11,7 @@ This acts as a "REPL" for the agent. Instead of struggling with complex math, lo
 ## 2. Shell Command Executor (`execute_shell`)
 Executes shell (Bash) commands and returns the output. 
 This allows the agent to navigate the filesystem, install packages (e.g., via `pip`), run tests (`pytest`), and use tools like `git`.
+**Security:** Commands are validated against a blocklist to prevent access to sensitive system files and directories (e.g., `/etc/`, `~/.ssh/`, `.git/config`).
 
 ## 3. Web Page Fetcher (`fetch_webpage`)
 Fetches a URL and returns clean text content with HTML tags stripped. 
@@ -19,6 +20,7 @@ This gives the agent real-time access to the web to read API documentation, GitH
 ## 4. File Operations (`read_file`, `write_file`)
 Provides read and write access to the local filesystem.
 The agent uses these tools to edit source code, manage configuration files, and persist its work securely.
+**Security:** Access is restricted to the user's home directory. Attempts to access sensitive files (e.g., `.env`, `.bashrc`, `.ssh/`, `/etc/`) are blocked.
 
 ## 5. Turn Lifecycle Hooks (`turn_start`, `turn_stop`)
 These implicit tools explicitly delimit the agent's work cycle:
