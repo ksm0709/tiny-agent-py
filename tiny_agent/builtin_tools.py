@@ -18,7 +18,7 @@ class TextExtractor(HTMLParser):
 
 @tool(
     name="execute_python",
-    description="Executes Python code in a secure temporary environment and returns stdout/stderr. Do not use for infinite loops.",
+    description="Executes Python code in a secure temporary environment. Returns stdout/stderr. Use for data processing, calculations, or quick scripts. Avoid long-running or infinite loops.",
 )
 def execute_python(code: str, timeout: int = 10) -> str:
     with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
@@ -41,7 +41,7 @@ def execute_python(code: str, timeout: int = 10) -> str:
 
 @tool(
     name="execute_shell",
-    description="Executes a shell command (Bash) and returns the output. Useful for file listing, pip installs, or environment checks.",
+    description="Executes a Bash shell command. Returns stdout/stderr. Use for system operations, file management, or installing dependencies. Always prefer specific tools if available.",
 )
 def execute_shell(command: str, timeout: int = 30) -> str:
     try:
@@ -56,7 +56,7 @@ def execute_shell(command: str, timeout: int = 30) -> str:
 
 @tool(
     name="fetch_webpage",
-    description="Fetches a URL and returns clean text content without HTML tags. Useful for reading docs or searching the web.",
+    description="Fetches a URL and returns clean text content. Use to read documentation, scrape web data, or gather information from websites.",
 )
 def fetch_webpage(url: str) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -73,7 +73,7 @@ def fetch_webpage(url: str) -> str:
 
 @tool(
     name="read_file",
-    description="Reads the entire content of a file from the local file system.",
+    description="Reads the entire content of a local file. Use to inspect code, configuration, or data files.",
 )
 def read_file(filepath: str) -> str:
     try:
@@ -85,7 +85,7 @@ def read_file(filepath: str) -> str:
 
 @tool(
     name="write_file",
-    description="Writes content to a file on the local file system. Overwrites the file if it exists.",
+    description="Writes content to a local file. Overwrites existing content. Use to create or update files.",
 )
 def write_file(filepath: str, content: str) -> str:
     try:

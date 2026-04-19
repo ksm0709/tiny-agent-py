@@ -86,7 +86,7 @@ class Agent:
             load_skill_tool = Tool(
                 func=load_skill,
                 name="load_skill",
-                description="Loads the detailed instructions for a specific skill by its ID.",
+                description="Loads detailed instructions for a skill by its ID. Use when you need to understand how to use a specific skill.",
             )
             self.tools["load_skill"] = load_skill_tool
 
@@ -111,12 +111,12 @@ class Agent:
         self.tools["turn_start"] = Tool(
             func=turn_start,
             name="turn_start",
-            description="MUST be called at the beginning of your turn to explicitly declare the task goal.",
+            description="Call at the start of your turn to declare the task goal. Essential for tracking progress.",
         )
         self.tools["turn_stop"] = Tool(
             func=turn_stop,
             name="turn_stop",
-            description="MUST be called at the end of your turn to explicitly declare the task completion and provide the final result.",
+            description="Call at the end of your turn to declare task completion and provide the final result. Ensures all pending tasks are finished.",
         )
         self.system_prompt += "\n\nYou MUST call the `turn_start` tool at the beginning of your work to declare your goal. When you have completed your task, you MUST call the `turn_stop` tool to provide the final result. If the work is complex and multi-step, you MUST use the `manage_tasks` tool to plan your work before executing it."
 
@@ -151,7 +151,7 @@ class Agent:
         self.tools["manage_tasks"] = Tool(
             func=manage_tasks,
             name="manage_tasks",
-            description="Manage the agent's task/todo list. Tasks stay in the context window. Provide a list of dictionaries with 'status' ('pending', 'in_progress', 'done'), 'title', and 'description'.",
+            description="Manage the agent's task list. Tasks are pinned to the context window. Provide a JSON array of objects with 'status' ('pending', 'in_progress', 'done'), 'title', and 'description'.",
         )
 
     async def _call_hook(self, hook_name: str, *args, **kwargs):
