@@ -51,6 +51,7 @@ async def test_agent_end_to_end_flow(
             tools=[local_calculator],
             mcp_servers=[{"name": "mock_db", "command": "dummy"}],
             skills_dirs=[skill_dir],
+            instruction_dirs=[skill_dir],
             hooks={"pre_call": on_pre_call, "on_tool_start": on_tool_start},
         )
 

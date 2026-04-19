@@ -25,19 +25,21 @@ For deep dives into specific features, check out our documentation:
 
 ## Installation
 
-You can install `tiny-agent-py` directly via `pip` or `uv`:
+To install `tiny-agent-py` without registering on package registries, you can install and update it directly via `git` and `uv` (or `pip`).
 
 ```bash
-pip install tiny-agent-py
-# or
-uv pip install tiny-agent-py
+# Install directly from the repository
+uv pip install git+https://github.com/ksm0709/tiny-agent-py.git
+
+# To update to the latest version later
+uv pip install --upgrade git+https://github.com/ksm0709/tiny-agent-py.git
 ```
 
 *For local development:*
 ```bash
-git clone https://github.com/your-org/tiny-agent-py.git
+git clone https://github.com/ksm0709/tiny-agent-py.git
 cd tiny-agent-py
-pip install -e .
+uv sync --dev
 ```
 
 ## Basic Usage

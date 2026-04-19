@@ -1,6 +1,7 @@
 import asyncio
 import json
 import litellm
+import os
 from typing import List, Dict, Any, Callable, Optional
 from litellm import acompletion
 
@@ -20,6 +21,7 @@ class Agent:
         max_iterations: int = 10,
         tools: Optional[List[Callable]] = None,
         mcp_servers: Optional[List[Dict[str, Any]]] = None,
+        instruction_dirs: Optional[List[str]] = None,
         skills_dirs: Optional[List[str]] = None,
         hooks: Optional[Dict[str, Callable]] = None,
         load_builtin_tools: bool = True,
@@ -55,15 +57,16 @@ class Agent:
         self.hooks = hooks or {}
 
         self.system_prompt = system_prompt
+        self._load_instructions(instruction_dirs or [])
         self._load_skills(skills_dirs or [])
 
-    def _load_skills(self, dirs: List[str]):
-        self.loaded_skills = {}
+    def _load_instructions(self, dirs: List[str]):
         for d in dirs:
             agents_md = SkillLoader.load_agents_md(d)
             if agents_md:
-                self.system_prompt += f"\n\n<skill>\n--- Project Instructions (AGENTS.md) ---\n{agents_md}\n</skill>"
+                self.system_prompt += f"\n\n<project_instructions>\n--- Project Instructions (AGENTS.md) ---\n{agents_md}\n</project_instructions>"
 
+    def _load_skills(self, dirs: List[str]):
         self.loaded_skills = SkillLoader.scan_skills(dirs)
 
         if self.loaded_skills:

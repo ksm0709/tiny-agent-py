@@ -53,7 +53,9 @@ def test_dynamic_skill_loading():
         with open(agents_md, "w") as f:
             f.write("Global agent instructions")
 
-        agent = Agent(session_id="test_agent", skills_dirs=[skill_dir])
+        agent = Agent(
+            session_id="test_agent", skills_dirs=[skill_dir], instruction_dirs=[skill_dir]
+        )
 
         assert "Global agent instructions" in agent.system_prompt
 
