@@ -1,14 +1,13 @@
 import asyncio
 import json
 import litellm
-import glob
-import os
 from typing import List, Dict, Any, Callable, Optional
 from litellm import acompletion
 
 from .memory import SessionMemory
 from .skills import SkillLoader
 from .mcp_manager import MCPManager
+from .tools import Tool
 
 
 class Agent:
@@ -59,27 +58,33 @@ class Agent:
         self._load_skills(skills_dirs or [])
 
     def _load_skills(self, dirs: List[str]):
-        skills = []
+        self.loaded_skills = {}
         for d in dirs:
             agents_md = SkillLoader.load_agents_md(d)
             if agents_md:
                 self.system_prompt += f"\n\n<skill>\n--- Project Instructions (AGENTS.md) ---\n{agents_md}\n</skill>"
 
-        for d in dirs:
-            for file in glob.glob(os.path.join(d, "*.md")):
-                if "AGENTS.md" in file:
-                    continue
-                try:
-                    skill = SkillLoader.load_from_file(file)
-                    skills.append(skill)
-                except Exception as e:
-                    print(f"Error loading skill {file}: {e}")
+        self.loaded_skills = SkillLoader.scan_skills(dirs)
 
-        if skills:
+        if self.loaded_skills:
             self.system_prompt += "\n\n<skill>\n--- Available Skills ---\n"
-            for s in skills:
-                self.system_prompt += f"Skill: {s.name}\nDescription: {s.description}\nInstructions: {s.instructions}\n\n"
+            for skill_id, s in self.loaded_skills.items():
+                self.system_prompt += f"Skill ID: {skill_id}\nName: {s.name}\nDescription: {s.description}\n\n"
             self.system_prompt += "</skill>"
+            self.system_prompt += "\nUse the `load_skill` tool with the appropriate `Skill ID` to load the full instructions for a skill."
+
+        def load_skill(skill_id: str) -> str:
+            if skill_id in self.loaded_skills:
+                return self.loaded_skills[skill_id].instructions
+            return f"Skill {skill_id} not found."
+
+        if self.loaded_skills:
+            load_skill_tool = Tool(
+                func=load_skill,
+                name="load_skill",
+                description="Loads the detailed instructions for a specific skill by its ID.",
+            )
+            self.tools["load_skill"] = load_skill_tool
 
     async def _call_hook(self, hook_name: str, *args, **kwargs):
         if hook_name in self.hooks:

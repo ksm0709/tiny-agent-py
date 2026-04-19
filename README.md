@@ -11,7 +11,7 @@ Unlike massive frameworks (e.g., LangChain, AutoGen), `tiny-agent-py` avoids blo
 - **SQLite Spillover Memory**: Archives older messages to a per-session SQLite database, ensuring full history retention without token limits.
 - **Cross-Session Search**: Built-in tools for the agent to query past conversations.
 - **Native Built-in Tools**: Essential tools (Python REPL, Bash Shell, Web Scraper, File I/O) are included and automatically loaded out-of-the-box.
-- **Markdown Skills (`AGENTS.md`)**: Automatically injects project instructions and dynamic markdown-based skills into the system prompt.
+- **Markdown Skills (`AGENTS.md`)**: Automatically injects project instructions into the system prompt. Individual skills are scanned and lazy-loaded via the `load_skill` tool to save token usage and prevent context overflow.
 - **`@tool` Decorator**: Turn any Python function into an LLM-accessible tool with zero boilerplate.
 
 ## Documentation
