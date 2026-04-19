@@ -1,6 +1,45 @@
 # CHANGELOG
 
 
+## v0.2.0 (2026-04-19)
+
+### Chores
+
+* chore: add .omc/ to .gitignore
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com> ([`c3eca9f`](https://github.com/ksm0709/tiny-agent-py/commit/c3eca9f47014b972d717167b6a907484d75a7bb6))
+
+* chore: sync uv.lock version to 0.1.2
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com> ([`be56ba0`](https://github.com/ksm0709/tiny-agent-py/commit/be56ba0b233156d2929f0e11c94f0f9a8567208e))
+
+* chore: update uv.lock and add .pkm ([`4f3bb65`](https://github.com/ksm0709/tiny-agent-py/commit/4f3bb656f9e8781a6a696f61bdc1c15847290baa))
+
+### Documentation
+
+* docs: exclude hidden directories from AGENTS.md documentation
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com> ([`6766b2f`](https://github.com/ksm0709/tiny-agent-py/commit/6766b2f1bfd0e68061ed682ecc5493f512c76779))
+
+* docs: add hierarchical AGENTS.md documentation across codebase
+
+Generated AI-readable AGENTS.md files for root, tiny_agent/, tests/, and
+docs/ directories covering architecture, tool namespacing, memory design,
+testing patterns, and agent workflow for AI agent navigation.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com> ([`a0261d4`](https://github.com/ksm0709/tiny-agent-py/commit/a0261d4fdb87032c7401264d02175b33a0bb0c74))
+
+### Features
+
+* feat: implement lazy loading for markdown skills
+
+- Update `SkillLoader` to recursively scan skill directories and generate colon-separated skill IDs (e.g., `sub:nested_skill`).
+- Modify `Agent._load_skills` to only inject skill metadata (ID, name, description) into the initial system prompt to save token usage.
+- Introduce `load_skill` tool to allow the agent to fetch the full markdown instruction on demand.
+- Update `README.md` and `docs/skills.md` to reflect the new lazy loading and nested directory support.
+- Add test coverage for dynamic skill loading behavior and sub-directory picking. ([`af6e1bd`](https://github.com/ksm0709/tiny-agent-py/commit/af6e1bd94f86dec3f94f2c2ab061686f690d234e))
+
+
 ## v0.1.2 (2026-04-19)
 
 ### Bug Fixes
